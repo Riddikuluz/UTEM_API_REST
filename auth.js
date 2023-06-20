@@ -16,8 +16,6 @@ passport.use(new GoogleStrategy({
         );
         const data = response.data;
         done(null, data);
-
-      
       }));
 
 passport.serializeUser(
