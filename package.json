@@ -1,7 +1,7 @@
 {
   "name": "utem_api_rest",
-  "version": "1.0.1",
-  "description": "Google 0auth",
+  "version": "1.0.2",
+  "description": "API NODE JS with AOUTH 2.0 AND JTW",
   "main": "main.js",
   "scripts": {
     "dev": "nodemon app.js"
@@ -9,11 +9,21 @@
   "author": "Riddikuluz",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.4.0",
     "dotenv": "^16.3.0",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.0",
     "passport": "^0.6.0",
-    "passport-google-oauth2": "^0.2.0"
-  }
+    "passport-google-oauth20": "^2.0.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Riddikuluz/UTEM_API_REST.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Riddikuluz/UTEM_API_REST/issues"
+  },
+  "homepage": "https://github.com/Riddikuluz/UTEM_API_REST#readme"
 }

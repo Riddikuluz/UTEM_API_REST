@@ -3,12 +3,13 @@ const passport = require('passport');
 const session = require('express-session');
 const path = require('path');
 const app = express();
-const PUERTO = process.env.PORT || 3000
-require('./auth');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
+require('./auth');
+
+const PUERTO = process.env.puerto || 3000
 
 app.use(express.json());
-
 app.use(express.static(path.join(__dirname, 'client')));
 
 function isLogIn(req, res, next) {
@@ -20,7 +21,7 @@ app.get('/', (req, res) => {
 });
 
 app.use(session({
-  secret: 'secreto',
+  secret: process.env.clave,
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false },//ctp
@@ -31,39 +32,33 @@ app.use(passport.session());
 
 app.get('/auth/google',
   passport.authenticate('google', {
-    scope: ['email', 'profile'],
+    session: false,
+    scope: ["profile", "email", "openid"],
   }
   ));
 
 app.get('/auth/google/callback',
   passport.authenticate('google',
     {
-      successRedirect: '/auth/protected',
+      successRedirect: '/auth/jwt',
       failureRedirect: '/auth/google/failure',
     }
   ));
 
 app.get('/auth/failure', isLogIn, (req, res) => {
-  res.send('Falla en el login');
+  res.sendStatus(500);
+  res.send('Crenciales no validas.');
 });
 
-app.get('/auth/protected', isLogIn, (req, res) => {
-  const dataUser = {
-    subUser: req.user.sub,
-    mailUser: req.user.email,
-    emailVerifiedUser: req.user.email_verified,
-  }
-  jwt.sign({ dataUser: dataUser }, 'secretkey', { expiresIn: '24h' }, (err, token) => {
+app.get('/auth/jwt', isLogIn, (req, res) => {
+  const dataRUser =req.user;
+  console.log(req);
+  jwt.sign({dataRUser},process.env.clave,{expiresIn: '24h'},  function(err, token){
     if (err) {
       res.sendStatus(500);
     } else {
-      //res.json({ token });
-      res.send( token );
-    }
-  });
-
-  //console.log(req);
-  //console.log(res);
+      res.send( res.json({token})); 
+    }});
 });
 
 app.get('/auth/logout', isLogIn, (req, res) => {
@@ -71,12 +66,11 @@ app.get('/auth/logout', isLogIn, (req, res) => {
   res.send("Hasta luego.");
 });
 
-
 app.listen(PUERTO, () => {
   console.log(`Escuchando en el puerto ${PUERTO}`);
 });
 
 
-//npm install express dotenv express-session passport passport-google-oauth2 jsonwebtoken
+//npm install express dotenv express-session passport passport-google-oauth2 jsonwebtoken axios
 //http://localhost:3000
 //https://jwt.io/
