@@ -6,7 +6,7 @@ Este repositorio contiene una implementación básica de autenticación utilizan
 
 - Utiliza el módulo `passport-google-oauth20` para la autenticación con Google OAuth2.
 - Genera un token JWT utilizando el algoritmo de firma HS256.
-- Utiliza las claves privada y pública RSA para firmar y verificar el token JWT.
+- Utiliza una clave privada  para firmar y verificar el token JWT HS256.
 - Protege rutas específicas con autenticación utilizando el middleware Passport.js.
 - Implementa endpoints para iniciar sesión con Google, obtener un token JWT y verificar el token JWT.
 - Utiliza el paquete `dotenv` para gestionar las variables de entorno.
@@ -16,7 +16,6 @@ Este repositorio contiene una implementación básica de autenticación utilizan
 
 - Node.js instalado en el sistema.
 - Credenciales de la API de Google (client ID y client secret) obtenidas desde el [Google Developer Console](https://console.developers.google.com/).
-- Claves privada y pública RSA generadas para firmar y verificar el token JWT.
 
 ## Configuración
 
