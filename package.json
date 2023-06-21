@@ -17,7 +17,6 @@
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Riddikuluz/UTEM_API_REST.git"
