@@ -9,30 +9,13 @@ passport.use(new GoogleStrategy({
     callbackURL:       process.env.http_Domain_Server ||process.env.http_Domain,
     passReqToCallback: true
   },
-  async function(request, accessToken, refreshToken,idToken, profile, done){
-
-    try {
-      const response = await axios.get(
-        `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken.id_token}`
-      );
-      const data = {
-        iss: response.data.iss,
-        azp: response.data.azp,
-        aud: response.data.aud,
-        sub: response.data.sub,
-        hd: response.data.hd,
-        email: response.data.email,
-        email_verified: response.data.email_verified,
-        at_hash: response.data.at_hash,
-        iat: response.data.iat,
-        exp: response.data.exp,
-      };
-      //console.log(data);
-      done(null, data);
-    } catch (error) {
-      done(error);
-    }
-      }));
+  async function(request, accessToken, refreshToken,idToken, profile, done)
+  {
+    const response = await axios.get(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken.id_token}`
+    );
+      done(null, response.data);
+  }));
 passport.serializeUser(
   (user,done)=>{done(null, user);
 });
