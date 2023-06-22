@@ -16,6 +16,7 @@ app.use(passport.initialize());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "client")));
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static("public")); // Directorio donde se encuentran(HTML, CSS, imágenes, etc.)
 
 app.use(
   session({
@@ -27,11 +28,13 @@ app.use(
 );
 
 app.use(passport.session());
+
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile(__dirname + "/public/index.html");
 });
 
-app.get("/auth/google",
+app.get(
+  "/auth/google",
   passport.authenticate("google", {
     session: false,
     scope: ["profile", "email"],
@@ -40,7 +43,8 @@ app.get("/auth/google",
   })
 );
 
-app.get("/auth/google/callback",
+app.get(
+  "/auth/google/callback",
   passport.authenticate("google", {
     successRedirect: "/auth/jwt",
     failureRedirect: "/auth/failure",
@@ -49,7 +53,10 @@ app.get("/auth/google/callback",
 
 app.get("/auth/jwt", isLogIn, (req, res) => {
   const dataUser = req.user;
-  jwt.sign({ dataUser },process.env.clave,{ expiresIn: "24h" },
+  jwt.sign(
+    { dataUser },
+    process.env.clave,
+    { expiresIn: "24h" },
     function (err, token) {
       if (err) {
         res.sendStatus(500);

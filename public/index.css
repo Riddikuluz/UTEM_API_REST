@@ -1,0 +1,46 @@
+/* Estilos generales */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+body.dark-mode {
+  /* Estilos para el modo noche */
+  background-color: #222;
+  color: #fff;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+}
+
+a {
+  display: inline-block;
+  background-color: #4285f4;
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  margin-top: 20px;
+}
+
+a:hover {
+  background-color: #3367d6;
+}
+
+/* Estilos específicos */
+/* Agrega aquí tus estilos específicos para tu página */
