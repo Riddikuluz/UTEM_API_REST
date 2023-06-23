@@ -8,30 +8,27 @@ function isLogIn(req, res, next) {
 
 // Función para registrar errores en un archivo de registro
 function logError(error) {
-  const logFilePath = "log.json";
-
-  // Cargar registros existentes
-  let logs = [];
-  try {
-    const logData = fs.readFileSync(logFilePath, "utf8");
-    logs = JSON.parse(logData);
-  } catch (error) {
-    // Si no se puede leer el archivo, se crea uno vacío
-    logs = [];
-  }
-
-  // Crear objeto de registro de error
   const errorLog = {
     message: error.message,
     stack: error.stack,
     date: new Date().toISOString(),
   };
 
-  // Agregar el registro al array
-  logs.push(errorLog);
+  // Leer los registros existentes (si hay alguno)
+  let errorLogs = [];
+  try {
+    const data = fs.readFileSync("logError.json", "utf8");
+    errorLogs = JSON.parse(data);
+  } catch (err) {
+    // Si no se puede leer el archivo o está vacío, se crea un array vacío
+    errorLogs = [];
+  }
+
+  // Agregar el nuevo registro de error al array
+  errorLogs.push(errorLog);
 
   // Escribir los registros en el archivo JSON
-  fs.writeFileSync(logFilePath, JSON.stringify(logs, null, 2), "utf8");
+  fs.writeFileSync("logError.json", JSON.stringify(errorLogs, null, 2), "utf8");
 }
 
 // Middleware para verificar el token JWT
