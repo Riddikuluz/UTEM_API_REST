@@ -17,7 +17,7 @@ function logError(error) {
   // Leer los registros existentes (si hay alguno)
   let errorLogs = [];
   try {
-    const data = fs.readFileSync("logError.json", "utf8");
+    const data = fs.readFileSync("./logError.json", "utf8");
     errorLogs = JSON.parse(data);
   } catch (err) {
     // Si no se puede leer el archivo o está vacío, se crea un array vacío
@@ -28,7 +28,11 @@ function logError(error) {
   errorLogs.push(errorLog);
 
   // Escribir los registros en el archivo JSON
-  fs.writeFileSync("logError.json", JSON.stringify(errorLogs, null, 2), "utf8");
+  fs.writeFileSync(
+    "./logError.json",
+    JSON.stringify(errorLogs, null, 2),
+    "utf8"
+  );
 }
 
 // Middleware para verificar el token JWT
@@ -49,11 +53,12 @@ async function verifyToken(req, res, next) {
         res.sendStatus(500); // Error al realizar la petición a la API externa
       }
     } else {
+      logError(error);
       res.sendStatus(403); // Si no se proporciona el encabezado de autorización, responde con un estado 403 (Prohibido)
     }
   } catch (error) {
     logError(error); // Registrar el error en caso de que ocurra
-    console.error(error); // Mostrar el error en la consola
+    //console.error(error); // Mostrar el error en la consola
     res.sendStatus(500); // Error interno del servidor
   }
 }
