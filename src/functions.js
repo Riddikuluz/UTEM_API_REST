@@ -17,7 +17,7 @@ function logError(error) {
   // Leer los registros existentes (si hay alguno)
   let errorLogs = [];
   try {
-    const data = fs.readFileSync("./logError.json", "utf8");
+    const data = fs.readFileSync("./src/logError.json", "utf8");
     errorLogs = JSON.parse(data);
   } catch (err) {
     // Si no se puede leer el archivo o está vacío, se crea un array vacío
@@ -29,7 +29,7 @@ function logError(error) {
 
   // Escribir los registros en el archivo JSON
   fs.writeFileSync(
-    "./logError.json",
+    "./src/logError.json",
     JSON.stringify(errorLogs, null, 2),
     "utf8"
   );
