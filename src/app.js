@@ -2,14 +2,14 @@ const express = require("express");
 //const jwt = require("jsonwebtoken");
 const routes = require("./routes");
 const app = express();
-const expressJS = require("./expressJS");
+const expressAPP = require("./expressAPP");
 require("dotenv").config({ path: "../config/.env" });
-require("./auth");
+require("./oauth20");
 
 const puerto = process.env.puertoServer || process.env.puerto;
 
 // Configuraciones y middlewares de Express
-expressJS(app);
+expressAPP(app);
 
 // Rutas
 routes(app);

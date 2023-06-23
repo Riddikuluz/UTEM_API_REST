@@ -1,5 +1,6 @@
 var GoogleStrategy = require("passport-google-oauth20").Strategy;
 const passport = require("passport");
+require("dotenv").config({ path: "./config/.env" });
 
 // Se configura Passport con la estrategia de autenticación de Google
 passport.use(

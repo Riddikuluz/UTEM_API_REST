@@ -1,10 +1,12 @@
 {
   "name": "utem_api_rest",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "API NODE JS with AOUTH 2.0 AND JTW",
-  "main": "main.js",
+  "main": "src/app.js",
   "scripts": {
-    "dev": "nodemon app.js"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Riddikuluz",
   "license": "ISC",
@@ -24,5 +26,6 @@
   "bugs": {
     "url": "https://github.com/Riddikuluz/UTEM_API_REST/issues"
   },
-  "homepage": "https://github.com/Riddikuluz/UTEM_API_REST#readme"
+  "homepage": "https://github.com/Riddikuluz/UTEM_API_REST#readme",
+  "devDependencies": {}
 }

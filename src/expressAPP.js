@@ -2,8 +2,9 @@ const passport = require("passport");
 const session = require("express-session");
 const express = require("express");
 const path = require("path");
+require("dotenv").config({ path: "./config/.env" });
 
-function expressJS(app) {
+function expressAPP(app) {
   // Configuración de Passport
   app.use(passport.initialize());
   app.use(express.json()); // Permite el análisis de datos JSON en las solicitudes
@@ -22,4 +23,4 @@ function expressJS(app) {
   app.use(passport.session()); // Permite el uso de sesiones de Passport
 }
 
-module.exports = expressJS;
+module.exports = expressAPP;
