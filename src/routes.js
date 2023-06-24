@@ -1,7 +1,8 @@
 const passport = require("passport");
 const path = require("path");
 const functions = require("./functions");
-
+const postDB = require("./db");
+const { v4: uuidv4, validate: validateUUID } = require("uuid");
 module.exports = function (app) {
   // Ruta principal que devuelve el archivo index.html
   app.get("/", (req, res) => {
@@ -45,6 +46,35 @@ module.exports = function (app) {
       res.sendStatus(500); // Envía un código de estado 500 (Error del servidor)
     }
   });
+
+  // Ruta para obtener los usuarios desde la base de datos
+  app.get("/auth/jwt/token/consuta", async function (req, res) {
+    const data = await postDB.revisarBaseDatos();
+    res.send(data);
+  });
+
+  app.get(
+    "/auth/jwt/token/voto",
+    functions.verifyToken,
+    async function (req, res) {
+      const tokenData = req.token;
+      const usuarioId = tokenData.email;
+
+      // Validar que el usuarioId sea un UUID válido
+
+      const fecha = new Date().toISOString().split("T")[0];
+      const cursoId = "INFB8090";
+      const valoracion = 6.9;
+      //postDB.registrarVoto(usuarioId, fecha, cursoId, valoracion);
+      const response = {
+        usuarioId: usuarioId,
+        fecha: fecha,
+        cursoId: cursoId,
+        valoracion: valoracion,
+      };
+      res.send(response);
+    }
+  );
 
   // Ruta para cerrar sesión
   app.get("/auth/logout", (req, res) => {

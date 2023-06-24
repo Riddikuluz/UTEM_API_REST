@@ -5,7 +5,8 @@
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "dev": "nodemon src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Riddikuluz",
   "license": "ISC",
@@ -16,7 +17,9 @@
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.0",
     "passport": "^0.6.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "pg": "^8.11.0",
+    "uuid": "^9.0.0"
   },
   "repository": {
     "type": "git",
@@ -25,6 +28,5 @@
   "bugs": {
     "url": "https://github.com/Riddikuluz/UTEM_API_REST/issues"
   },
-  "homepage": "https://github.com/Riddikuluz/UTEM_API_REST#readme",
-  "devDependencies": {}
+  "homepage": "https://github.com/Riddikuluz/UTEM_API_REST#readme"
 }
