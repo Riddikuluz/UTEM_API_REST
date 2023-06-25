@@ -74,14 +74,17 @@ module.exports = function (app) {
     //const usuarioId = tokenData.email;
     const usuario_id = "1111111111111";
     const nombre = "Riddikulus";
-    const fecha = new Date().toISOString().split("T")[0];
+    const fecha = new Date().toLocaleDateString("es-CL");
     const nombre_curso = "API Node JS";
     const curso_id = "INFB1234";
     const valoracion = 2;
+    const seccion_curso = "412";
 
     const dataResultados = await postDB.consultadb();
-    if (functions.yaVoto(dataResultados.usuarios, usuario_id, fecha)) {
-      res.send("Ya voto, espere el proximo dia.");
+    if (
+      functions.yaVoto(dataResultados.usuarios, usuario_id, fecha, curso_id)
+    ) {
+      res.send("Ya voto por este ramo, espere el proximo dia.");
     } else {
       await postDB.registrarVoto(
         curso_id,
@@ -90,9 +93,11 @@ module.exports = function (app) {
         valoracion,
         usuario_id,
         nombre,
-        fecha
+        fecha,
+        seccion_curso
       );
-      res.send("votacion ya realizada.");
+
+      res.send("votacion realizada.");
     }
   });
 

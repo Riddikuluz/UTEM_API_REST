@@ -64,7 +64,7 @@ async function verifyToken(req, res, next) {
   }
 }
 
-function yaVoto(dataResultados, usuarioV, fechaV) {
+function yaVoto(dataResultados, usuarioV, fechaV, cursoV) {
   for (let i = 0; i < dataResultados.length; i++) {
     const voto = dataResultados[i];
     const fechaR = voto.fecha.toISOString().slice(0, 10);
@@ -81,15 +81,18 @@ function yaVoto(dataResultados, usuarioV, fechaV) {
       partesFecha2[1] - 1,
       partesFecha2[0]
     );
+    //console.log(voto.usuario_id);
+    //console.log(usuarioV);
+    //console.log(fechaObj2.getTime());
+    //console.log(fechaObj1.getTime());
+    //console.log(voto.curso_id);
+    //console.log(cursoV);
 
     if (
       voto.usuario_id == usuarioV &&
-      fechaObj1.getTime() === fechaObj2.getTime()
+      fechaObj1.getTime() === fechaObj2.getTime() &&
+      voto.curso_id == cursoV
     ) {
-      //console.log(voto.usuario_id);
-      //console.log(usuarioV);
-      //console.log(fechaObj2.getTime());
-      //console.log(fechaObj1.getTime());
       return true;
     }
   }
