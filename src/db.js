@@ -38,6 +38,32 @@ async function consultadb() {
     await client.end();
   }
 }
+async function dbcurso() {
+  const client = new Client({
+    user: process.env.usuario_DB,
+    host: process.env.public_IP,
+    database: process.env.nombre_DB,
+    password: process.env.clave_DB,
+    port: process.env.pub_Port,
+  });
+
+  try {
+    await client.connect();
+
+    const consultaVotos = `
+      SELECT *
+      FROM ramo;
+    `;
+    const resultadoramos = await client.query(consultaVotos);
+
+    return resultadoramos.rows;
+  } catch (error) {
+    functions.logError(error);
+    throw error;
+  } finally {
+    await client.end();
+  }
+}
 
 async function consultaRamo(curso_id) {
   const client = new Client({
@@ -74,7 +100,6 @@ async function registrarVoto(
   valoracion,
   usuario_id,
   nombre,
-  fecha,
   seccion_curso
 ) {
   const client = new Client({
@@ -126,4 +151,5 @@ module.exports = {
   registrarVoto,
   consultadb,
   consultaRamo,
+  dbcurso,
 };

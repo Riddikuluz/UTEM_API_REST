@@ -35,8 +35,6 @@ function logError(error) {
     "utf8"
   );
 }
-
-// Middleware para verificar el token JWT
 async function verifyToken(req, res, next) {
   try {
     const bearerHeader = req.headers["authorization"];
@@ -54,13 +52,34 @@ async function verifyToken(req, res, next) {
         res.sendStatus(500); // Error al realizar la petición a la API externa
       }
     } else {
-      logError(error);
       res.sendStatus(403); // Si no se proporciona el encabezado de autorización, responde con un estado 403 (Prohibido)
     }
   } catch (error) {
     logError(error); // Registrar el error en caso de que ocurra
     //console.error(error); // Mostrar el error en la consola
     res.sendStatus(500); // Error interno del servidor
+  }
+}
+
+async function verifyTokenbody(token, res) {
+  try {
+    if (typeof token !== "undefined") {
+      try {
+        const response = await axios.get(
+          `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`
+        );
+        if (response.data.aud) return true;
+        //return response.data;
+      } catch (error) {
+        logError(error); // Registrar el error en caso de que ocurra
+        return false; // Error al realizar la petición a la API externa 500
+      }
+    } else {
+      return false; // Si no se proporciona el encabezado de autorización 403
+    }
+  } catch (error) {
+    logError(error); // Registrar el error en caso de que ocurra
+    return false; // Error interno del servidor 500
   }
 }
 
@@ -107,10 +126,20 @@ function calcularPromedio(dataResultados) {
     0
   );
   if (sumatoria > 0) {
-    return sumatoria / numeros.length;
+    return {
+      valoracion: dataResultados,
+      promedio: sumatoria / numeros.length,
+    };
   } else {
     return "No hay registros.";
   }
 }
 
-module.exports = { isLogIn, logError, verifyToken, yaVoto, calcularPromedio };
+module.exports = {
+  isLogIn,
+  logError,
+  verifyToken,
+  verifyTokenbody,
+  yaVoto,
+  calcularPromedio,
+};
