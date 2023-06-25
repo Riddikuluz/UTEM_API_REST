@@ -2,7 +2,6 @@ const passport = require("passport");
 const path = require("path");
 const functions = require("./functions");
 const postDB = require("./db");
-const { v4: uuidv4, validate: validateUUID } = require("uuid");
 module.exports = function (app) {
   // Ruta principal que devuelve el archivo index.html
   app.get("/", (req, res) => {
@@ -31,11 +30,17 @@ module.exports = function (app) {
 
   // Ruta protegida con autenticación JWT
   app.get("/auth/jwt", functions.isLogIn, (req, res) => {
-    const dataUser = req.user;
-    res.json(dataUser);
+    try {
+      const dataUser = req.user;
+      res.json(dataUser);
+    } catch (error) {
+      functions.logError(error); // Registra el error en caso de que ocurra
+      console.error(error); // Muestra el error en la consola
+      res.sendStatus(500); // Envía un código de estado 500 (Error del servidor)
+    }
   });
 
-  // Ruta para obtener el token JWT
+  // Ruta para obtener el token JWT , functions.verifyToken
   app.get("/auth/jwt/token", functions.verifyToken, function (req, res) {
     try {
       const tokenData = req.token;
@@ -49,32 +54,47 @@ module.exports = function (app) {
 
   // Ruta para obtener los usuarios desde la base de datos
   app.get("/auth/jwt/token/consuta", async function (req, res) {
-    const data = await postDB.revisarBaseDatos();
-    res.send(data);
+    const dataResultados = await postDB.consultadb();
+    res.send(dataResultados);
   });
 
-  app.get(
-    "/auth/jwt/token/voto",
-    functions.verifyToken,
-    async function (req, res) {
-      const tokenData = req.token;
-      const usuarioId = tokenData.email;
+  app.get("/auth/jwt/token/consuta/ramo", async function (req, res) {
+    const curso_id = "INFB1234";
+    const dataResultados = await postDB.consultaRamo(curso_id);
+    const promedio = functions.calcularPromedio(dataResultados);
 
-      // Validar que el usuarioId sea un UUID válido
+    res.send({ promedio: promedio });
+  });
 
-      const fecha = new Date().toISOString().split("T")[0];
-      const cursoId = "INFB8090";
-      const valoracion = 6.9;
-      //postDB.registrarVoto(usuarioId, fecha, cursoId, valoracion);
-      const response = {
-        usuarioId: usuarioId,
-        fecha: fecha,
-        cursoId: cursoId,
-        valoracion: valoracion,
-      };
-      res.send(response);
+  //, functions.verifyToken
+  app.post("/auth/jwt/token/voto", async (req, res) => {
+    // Datos del voto recibidos en el cuerpo de la solicitud
+    //const { curso_id, nombre_curso, fecha, valoracion, usuario_id, nombre } =req.body;
+    //const tokenData = req.token;
+    //const usuarioId = tokenData.email;
+    const usuario_id = "1111111111111";
+    const nombre = "Riddikulus";
+    const fecha = new Date().toISOString().split("T")[0];
+    const nombre_curso = "API Node JS";
+    const curso_id = "INFB1234";
+    const valoracion = 2;
+
+    const dataResultados = await postDB.consultadb();
+    if (functions.yaVoto(dataResultados.usuarios, usuario_id, fecha)) {
+      res.send("Ya voto, espere el proximo dia.");
+    } else {
+      await postDB.registrarVoto(
+        curso_id,
+        nombre_curso,
+        fecha,
+        valoracion,
+        usuario_id,
+        nombre,
+        fecha
+      );
+      res.send("votacion ya realizada.");
     }
-  );
+  });
 
   // Ruta para cerrar sesión
   app.get("/auth/logout", (req, res) => {

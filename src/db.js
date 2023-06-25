@@ -1,92 +1,149 @@
 const { Client } = require("pg");
 const functions = require("./functions");
 require("dotenv").config({ path: "./config/.env" });
-const { v4: uuidv4 } = require("uuid");
-const crypto = require("crypto");
-
-const client = new Client({
-  user: process.env.usuario_DB,
-  host: process.env.public_IP,
-  database: process.env.nombre_DB,
-  password: process.env.clave_DB,
-  port: process.env.pub_Port,
-});
 
 async function onlineDB() {
-  return new Promise((resolve, reject) => {
-    client.connect((err) => {
-      if (err) {
-        functions.logError(err);
-        reject(err);
-      } else {
-        resolve("Conexión exitosa a la base de datos.");
-      }
-    });
+  const client = new Client({
+    user: process.env.usuario_DB,
+    host: process.env.public_IP,
+    database: process.env.nombre_DB,
+    password: process.env.clave_DB,
+    port: process.env.pub_Port,
   });
+
+  try {
+    await client.connect();
+    return "Conexión exitosa a la base de datos.";
+  } catch (error) {
+    functions.logError(error);
+    throw error;
+  } finally {
+    await client.end();
+  }
 }
 
-async function revisarBaseDatos() {
+async function consultadb() {
+  const client = new Client({
+    user: process.env.usuario_DB,
+    host: process.env.public_IP,
+    database: process.env.nombre_DB,
+    password: process.env.clave_DB,
+    port: process.env.pub_Port,
+  });
+
   try {
     await client.connect();
 
-    // Consulta para obtener todos los votos registrados en la tabla "votos"
-    const consulta = `
+    const consultaVotos = `
       SELECT *
       FROM votos;
     `;
-    const resultado = await client.query(consulta);
+    const resultadoVotos = await client.query(consultaVotos);
 
-    // Imprimir los resultados
-    console.log("Votos registrados:", resultado.rows);
-    return resultado.rows;
-    //console.log("Total de votos:", resultado.rowCount);
-    //return resultado.rows;
+    const consultausuarios = `
+      SELECT *
+      FROM usuarios;
+    `;
+    const resultadousuarios = await client.query(consultausuarios);
+
+    const resultado = {
+      votos: resultadoVotos.rows,
+      usuarios: resultadousuarios.rows,
+    };
+    return resultado;
   } catch (error) {
-    console.error("Error al revisar la base de datos:", error);
+    functions.logError(error);
+    throw error;
   } finally {
     await client.end();
   }
 }
 
-async function registrarVoto(usuarioId, fecha, cursoId, valoracion) {
+async function consultaRamo(curso_id) {
+  const client = new Client({
+    user: process.env.usuario_DB,
+    host: process.env.public_IP,
+    database: process.env.nombre_DB,
+    password: process.env.clave_DB,
+    port: process.env.pub_Port,
+  });
+
   try {
     await client.connect();
 
-    // Verificar si el usuario ya ha votado para el día y curso actual
-    const votoPorUsuarioQuery = `
-      SELECT COUNT(*) as count
+    const consultaVotos = `
+      SELECT valoracion
       FROM votos
-      WHERE usuario_id = $1
-        AND fecha = $2;
+      WHERE curso_id = $1;
     `;
-    const votoPorUsuarioValues = [usuarioId, fecha];
-    const votoPorUsuarioResult = await client.query(
-      votoPorUsuarioQuery,
-      votoPorUsuarioValues
-    );
-    const votoPorUsuarioRowCount = parseInt(votoPorUsuarioResult.rows[0].count);
+    const resultadoVotos = await client.query(consultaVotos, [curso_id]);
 
-    if (votoPorUsuarioRowCount === 0) {
-      // Generar el identificador único para el voto
-      const votoId = uuid.v4();
-
-      // Insertar el voto en la base de datos
-      const insertQuery = `
-        INSERT INTO votos (voto_id, usuario_id, fecha, curso_id, valoracion)
-        VALUES ($1, $2, $3, $4, $5);
-      `;
-      const insertValues = [votoId, usuarioId, fecha, cursoId, valoracion];
-      await client.query(insertQuery, insertValues);
-
-      console.log("Voto registrado exitosamente.");
-    } else {
-      console.log("Ya has votado para este día.");
-    }
+    return resultadoVotos.rows;
   } catch (error) {
-    console.error("Error al registrar el voto:", error);
+    functions.logError(error);
+    throw error;
   } finally {
     await client.end();
   }
 }
 
-module.exports = { registrarVoto, revisarBaseDatos, onlineDB };
+async function registrarVoto(
+  curso_id,
+  nombre_curso,
+  fecha,
+  valoracion,
+  usuario_id,
+  nombre,
+  fecha
+) {
+  const client = new Client({
+    user: process.env.usuario_DB,
+    host: process.env.public_IP,
+    database: process.env.nombre_DB,
+    password: process.env.clave_DB,
+    port: process.env.pub_Port,
+  });
+
+  try {
+    await client.connect();
+
+    const insertOrUpdateUserQuery = `
+    INSERT INTO usuarios (usuario_id, nombre, fecha)
+    VALUES ($1, $2, $3)
+    RETURNING id
+  `;
+
+    const userResult = await client.query(insertOrUpdateUserQuery, [
+      usuario_id,
+      nombre,
+      fecha,
+    ]);
+    //const userId = userResult.rows[0].id;
+
+    const insertVoteQuery = `
+      INSERT INTO votos (curso_id, nombre_curso, fecha, valoracion)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id
+    `;
+
+    const voteResult = await client.query(insertVoteQuery, [
+      curso_id,
+      nombre_curso,
+      fecha,
+      valoracion,
+    ]);
+    //const voteId = voteResult.rows[0].id;
+  } catch (error) {
+    functions.logError(error);
+    throw error;
+  } finally {
+    await client.end();
+  }
+}
+
+module.exports = {
+  registrarVoto,
+  consultadb,
+  onlineDB,
+  consultaRamo,
+};

@@ -1,5 +1,6 @@
 const fs = require("fs");
 const axios = require("axios");
+const { type } = require("os");
 
 // Middleware que verifica si el usuario ha iniciado sesión
 function isLogIn(req, res, next) {
@@ -63,4 +64,50 @@ async function verifyToken(req, res, next) {
   }
 }
 
-module.exports = { isLogIn, logError, verifyToken };
+function yaVoto(dataResultados, usuarioV, fechaV) {
+  for (let i = 0; i < dataResultados.length; i++) {
+    const voto = dataResultados[i];
+    const fechaR = voto.fecha.toISOString().slice(0, 10);
+    const partesFecha1 = fechaR.split("-");
+    const fechaObj1 = new Date(
+      partesFecha1[0],
+      partesFecha1[1] - 1,
+      partesFecha1[2]
+    );
+
+    const partesFecha2 = fechaV.split("-");
+    const fechaObj2 = new Date(
+      partesFecha2[2],
+      partesFecha2[1] - 1,
+      partesFecha2[0]
+    );
+
+    if (
+      voto.usuario_id == usuarioV &&
+      fechaObj1.getTime() === fechaObj2.getTime()
+    ) {
+      //console.log(voto.usuario_id);
+      //console.log(usuarioV);
+      //console.log(fechaObj2.getTime());
+      //console.log(fechaObj1.getTime());
+      return true;
+    }
+  }
+  return false;
+}
+
+function calcularPromedio(dataResultados) {
+  const numeros = dataResultados.map((objeto) => objeto.valoracion);
+
+  const sumatoria = numeros.reduce(
+    (acumulador, numero) => acumulador + numero,
+    0
+  );
+  if (sumatoria > 0) {
+    return sumatoria / numeros.length;
+  } else {
+    return "No hay registros.";
+  }
+}
+
+module.exports = { isLogIn, logError, verifyToken, yaVoto, calcularPromedio };
