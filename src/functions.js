@@ -61,14 +61,20 @@ async function verifyToken(req, res, next) {
   }
 }
 
-async function verifyTokenbody(token, res) {
+async function verifyTokenbody(token) {
   try {
     if (typeof token !== "undefined") {
       try {
         const response = await axios.get(
           `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`
         );
-        if (response.data.aud) return true;
+        if (response.data.aud) {
+          return {
+            usuario_id: response.data.sub,
+            nombre: response.data.name,
+          };
+        }
+
         //return response.data;
       } catch (error) {
         logError(error); // Registrar el error en caso de que ocurra
