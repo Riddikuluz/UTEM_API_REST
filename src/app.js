@@ -1,6 +1,6 @@
 const express = require("express");
-//const jwt = require("jsonwebtoken");
 const routes = require("./routes");
+const voter = require("./voter");
 const expressAPP = require("./expressAPP");
 require("dotenv").config({ path: "./config/.env" });
 require("./oauth20");
@@ -10,8 +10,11 @@ const puerto = process.env.puertoServer || process.env.puerto;
 // Configuraciones y middlewares de Express
 expressAPP(app);
 
-// Rutas
+// Rutas Google
 routes(app);
+
+// metodos voter
+voter(app);
 
 // Iniciar el servidor
 app.listen(puerto, () => {
