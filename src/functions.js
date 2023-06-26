@@ -1,6 +1,5 @@
 const fs = require("fs");
 const axios = require("axios");
-const { type } = require("os");
 
 // Middleware que verifica si el usuario ha iniciado sesión
 function isLogIn(req, res, next) {
@@ -35,6 +34,7 @@ function logError(error) {
     "utf8"
   );
 }
+
 async function verifyToken(req, res, next) {
   try {
     const bearerHeader = req.headers["authorization"];
@@ -57,7 +57,6 @@ async function verifyToken(req, res, next) {
   } catch (error) {
     logError(error); // Registrar el error en caso de que ocurra
     //console.error(error); // Mostrar el error en la consola
-    res.sendStatus(500); // Error interno del servidor
   }
 }
 
