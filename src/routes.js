@@ -75,8 +75,6 @@ module.exports = function (app) {
     "/auth/jwt/token/consuta/ramo/:curso_id",
     functions.verifyToken,
     async function (req, res) {
-      //https://example.com/auth/jwt/token/consuta/ramo/INFB1234
-      //const curso_id = "INFB1234";
       const curso_id = req.params.curso_id;
       const dataResultados = await postDB.consultaRamo(curso_id);
       if (dataResultados.length > 0) {
@@ -92,35 +90,41 @@ module.exports = function (app) {
   app.post("/auth/jwt/token/voto", async (req, res) => {
     // Datos del voto recibidos en el cuerpo de la solicitud
     const {
-      token,
-      curso_id,
-      nombre_curso,
-      fecha,
-      valoracion,
-      usuario_id,
-      nombre,
-      seccion_curso,
+      token, //bearer
+      fecha, //json
+      valoracion, //json
+      seccion_curso, //json
     } = req.body;
     //const fecha = new Date().toLocaleDateString("es-CL");
-    if (!functions.verifyTokenbody(token)) {
+    const dataToken = await functions.verifyTokenbody(token);
+    const dataRamos = await postDB.buscaSeccion(seccion_curso);
+
+    if (!dataToken || !dataRamos) {
       res.status(500).json("Error al realizar la petición a la API externa"); // Enviar código de estado 500 y mensaje de error
     } else {
       const dataResultados = await postDB.consultadb();
       if (
-        functions.yaVoto(dataResultados.usuarios, usuario_id, fecha, curso_id)
+        functions.yaVoto(
+          dataResultados.usuarios,
+          dataToken.usuario_id,
+          fecha,
+          dataRamos.curso_id
+        )
       ) {
-        await postDB.registrarVoto(
-          curso_id,
-          nombre_curso,
-          fecha,
-          valoracion,
-          usuario_id,
-          nombre,
-          fecha,
-          seccion_curso
-        );
         res.status(200).json("Ya voto por este ramo, espere el proximo dia.");
       } else {
+        await postDB.registrarVoto(
+          dataRamos.curso_id,
+          dataRamos.nombre_curso,
+          fecha,
+          valoracion,
+          dataToken.usuario_id,
+          dataToken.nombre,
+          seccion_curso,
+          dataRamos.semestre,
+          dataRamos.anio,
+          dataRamos.active
+        );
         res.status(200).json("votacion realizada.");
       }
     }
