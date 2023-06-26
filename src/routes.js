@@ -72,14 +72,22 @@ module.exports = function (app) {
   );
 
   app.get(
-    "/auth/jwt/token/consuta/ramo/:curso_id",
+    "/auth/jwt/token/consuta/ramo/:seccion_curso",
     functions.verifyToken,
     async function (req, res) {
-      const curso_id = req.params.curso_id;
-      const dataResultados = await postDB.consultaRamo(curso_id);
-      if (dataResultados.length > 0) {
-        const promedio = functions.calcularPromedio(dataResultados);
-        res.json({ [curso_id]: promedio });
+      const seccion_curso = req.params.seccion_curso;
+      const dataResultados = await postDB.consultaRamo(seccion_curso);
+      if (dataResultados.valoraciones.length > 0) {
+        const promedio = functions.calcularPromedio(
+          dataResultados.valoraciones
+        );
+
+        const resultados_seccion = {
+          votaciones: dataResultados.resultados,
+          promedio_seccion: promedio,
+        };
+
+        res.json(resultados_seccion);
       } else {
         res.status(404).json({ error: "No hay registros" });
       }

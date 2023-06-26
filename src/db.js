@@ -63,7 +63,7 @@ async function dbcurso() {
   }
 }
 
-async function consultaRamo(curso_id) {
+async function consultaRamo(seccion_curso) {
   const client = new Client({
     user: process.env.usuario_DB,
     host: process.env.public_IP,
@@ -77,11 +77,21 @@ async function consultaRamo(curso_id) {
     const consultaVotos = `
       SELECT valoracion
       FROM votos
-      WHERE curso_id = $1;
+      WHERE seccion_curso = $1;
     `;
-    const resultadoVotos = await client.query(consultaVotos, [curso_id]);
+    const resultadoVotos = await client.query(consultaVotos, [seccion_curso]);
 
-    return resultadoVotos.rows;
+    const consultaCurso = `
+      SELECT *
+      FROM votos
+      WHERE seccion_curso = $1;
+    `;
+    resultadoCurso = await client.query(consultaCurso, [seccion_curso]);
+
+    return {
+      valoraciones: resultadoVotos.rows,
+      resultados: resultadoCurso.rows,
+    };
   } catch (error) {
     functions.logError(error);
     throw error;

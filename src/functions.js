@@ -132,10 +132,7 @@ function calcularPromedio(dataResultados) {
     0
   );
   if (sumatoria > 0) {
-    return {
-      valoracion: dataResultados,
-      promedio: sumatoria / numeros.length,
-    };
+    return sumatoria / numeros.length;
   } else {
     return "No hay registros.";
   }
