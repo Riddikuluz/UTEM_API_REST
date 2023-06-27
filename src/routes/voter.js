@@ -10,11 +10,16 @@ module.exports = function (app) {
     aouthToken.verifyToken,
     async function (req, res) {
       try {
-        const dataResultados = await getDB.consultarDB();
-        res.status(200).json(dataResultados.votos);
+        const tokenData = req.token;
+        if (getDB.buscarAdmin(tokenData.sub)) {
+          const dataResultados = await getDB.consultarDB();
+          res.status(200).json(dataResultados.votos);
+        } else {
+          res.status(403).json("El cliente no posee los permisos necesarios.");
+        }
       } catch (error) {
         functions.logError(error); // Registra el error en caso de que ocurra
-        res.sendStatus(500).json(error); // Envía un código de estado 500 (Error del servidor)
+        res.sendStatus(500); // Envía un código de estado 500 (Error del servidor)
       }
     }
   );
@@ -24,11 +29,16 @@ module.exports = function (app) {
     aouthToken.verifyToken,
     async function (req, res) {
       try {
-        const dataResultados = await getDB.consultarDB(); //ramos
-        res.status(200).json(dataResultados.ramos);
+        const tokenData = req.token;
+        if (getDB.buscarAdmin(tokenData.sub)) {
+          const dataResultados = await getDB.consultarDB(); //ramos
+          res.status(200).json(dataResultados.ramos);
+        } else {
+          res.status(403).json("El cliente no posee los permisos necesarios.");
+        }
       } catch (error) {
         functions.logError(error); // Registra el error en caso de que ocurra
-        res.sendStatus(500).json(error); // Envía un código de estado 500 (Error del servidor)
+        res.sendStatus(500); // Envía un código de estado 500 (Error del servidor)
       }
     }
   );
@@ -37,20 +47,26 @@ module.exports = function (app) {
     "/v1/voter/:seccion_curso/results",
     aouthToken.verifyToken,
     async function (req, res) {
-      const seccion_curso = req.params.seccion_curso;
       try {
-        const dataResultados = await getDB.consultaSeccion(seccion_curso);
-        if (dataResultados.valoraciones.length > 0) {
-          const promedio = functions.calcularPromedio(
-            dataResultados.valoraciones
-          );
+        const tokenData = req.token;
+        const seccion_curso = req.params.seccion_curso;
 
-          const resultados_seccion = {
-            votaciones: dataResultados.resultados,
-            promedio_seccion: promedio,
-          };
-
-          res.json(resultados_seccion);
+        if (getDB.buscarAdmin(tokenData.sub)) {
+          const dataResultados = await getDB.consultaSeccion(seccion_curso);
+          if (dataResultados.valoraciones.length > 0) {
+            const promedio = functions.calcularPromedio(
+              dataResultados.valoraciones
+            );
+            const resultados_seccion = {
+              votaciones: dataResultados.resultados,
+              promedio_seccion: promedio,
+            };
+            res.json(resultados_seccion);
+          } else {
+            res
+              .status(403)
+              .json("El cliente no posee los permisos necesarios.");
+          }
         } else {
           functions.logError("No hay registros");
           res.status(404).json("No hay registros");
@@ -71,7 +87,7 @@ module.exports = function (app) {
     const dataRamos = await getDB.buscaSeccion(seccion_curso);
 
     if (!dataToken || !dataRamos) {
-      res.status(404).json("Datos no encotrados."); // Enviar código de estado 400 (Solicitud incorrecta) y mensaje de error
+      res.status(404).json("Datos no encontrados."); // Enviar código de estado 404 (No encontrado) y mensaje de error
     } else {
       try {
         const dataResultados = await getDB.consultarDB(); //votos y usuarios
@@ -83,7 +99,7 @@ module.exports = function (app) {
             dataRamos.curso_id
           )
         ) {
-          res.status(200).json("Ya voto por este ramo, espere el próximo día.");
+          res.status(200).json("Ya votó por este ramo, espere al próximo día.");
         } else {
           await postDB.registrarVoto(
             dataRamos.curso_id,
@@ -101,7 +117,7 @@ module.exports = function (app) {
         }
       } catch (error) {
         functions.logError(error); // Registra el error en caso de que ocurra
-        res.sendStatus(500).json(error); // Envía un código de estado 500 (Error del servidor)
+        res.status(500).json(error); // Envía un código de estado 500 (Error del servidor) y mensaje de error
       }
     }
   });

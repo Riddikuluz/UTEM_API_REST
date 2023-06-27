@@ -118,8 +118,38 @@ async function buscaSeccion(seccionCurso) {
   }
 }
 
+async function buscarAdmin(usuarioId) {
+  const client = getClient();
+  try {
+    await client.connect();
+
+    const query = `
+      SELECT *
+      FROM admin
+      WHERE usuario_id = $1;
+    `;
+
+    const values = [usuarioId];
+
+    const result = await client.query(query, values);
+
+    if (result.rowCount > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    functions.logError(error);
+    console.error("Error al buscar el usuario por ID:", error);
+    throw error;
+  } finally {
+    await client.end();
+  }
+}
+
 module.exports = {
   consultarDB,
   consultaSeccion,
   buscaSeccion,
+  buscarAdmin,
 };
