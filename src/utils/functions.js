@@ -27,45 +27,57 @@ function logError(error) {
 }
 
 function yaVoto(dataResultados, usuarioV, fechaV, cursoV) {
-  for (let i = 0; i < dataResultados.length; i++) {
-    const voto = dataResultados[i];
-    const fechaR = voto.fecha.toISOString().slice(0, 10);
-    const partesFecha1 = fechaR.split("-");
-    const fechaObj1 = new Date(
-      partesFecha1[0],
-      partesFecha1[1] - 1,
-      partesFecha1[2]
-    );
+  try {
+    for (let i = 0; i < dataResultados.length; i++) {
+      const voto = dataResultados[i];
+      const fechaR = voto.fecha.toISOString().slice(0, 10);
+      const partesFecha1 = fechaR.split("-");
+      const fechaObj1 = new Date(
+        partesFecha1[0],
+        partesFecha1[1] - 1,
+        partesFecha1[2]
+      );
 
-    const partesFecha2 = fechaV.split("-");
-    const fechaObj2 = new Date(
-      partesFecha2[2],
-      partesFecha2[1] - 1,
-      partesFecha2[0]
-    );
+      const partesFecha2 = fechaV.split("-");
+      const fechaObj2 = new Date(
+        partesFecha2[2],
+        partesFecha2[1] - 1,
+        partesFecha2[0]
+      );
 
-    if (
-      voto.usuario_id == usuarioV &&
-      fechaObj1.getTime() === fechaObj2.getTime() &&
-      voto.curso_id == cursoV
-    ) {
-      return true;
+      if (
+        voto.usuario_id == usuarioV &&
+        fechaObj1.getTime() === fechaObj2.getTime() &&
+        voto.curso_id == cursoV
+      ) {
+        return true;
+      }
     }
+    return false;
+  } catch (error) {
+    logError(error);
+    console.error("Error en la función yaVoto:", error);
+    return false;
   }
-  return false;
 }
 
 function calcularPromedio(dataResultados) {
-  const numeros = dataResultados.map((objeto) => objeto.valoracion);
+  try {
+    const numeros = dataResultados.map((objeto) => objeto.valoracion);
 
-  const sumatoria = numeros.reduce(
-    (acumulador, numero) => acumulador + numero,
-    0
-  );
-  if (sumatoria > 0) {
-    return sumatoria / numeros.length;
-  } else {
-    return "No hay registros.";
+    const sumatoria = numeros.reduce(
+      (acumulador, numero) => acumulador + numero,
+      0
+    );
+    if (sumatoria > 0) {
+      return sumatoria / numeros.length;
+    } else {
+      return "No hay registros.";
+    }
+  } catch (error) {
+    logError(error);
+    console.error("Error en la función calcularPromedio:", error);
+    return "Error al calcular el promedio.";
   }
 }
 

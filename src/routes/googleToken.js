@@ -6,29 +6,44 @@ const aouthToken = require("../services/oauthToken");
 module.exports = function (app) {
   // Ruta principal que devuelve el archivo index.html
   app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../public/index.html"));
-    //res.sendStatus(303); // 303 See Other
+    try {
+      res.sendFile(path.join(__dirname, "../public/index.html"));
+      //res.sendStatus(303); // 303 See Other
+    } catch (error) {
+      functions.logError(error);
+      console.error("Error en la ruta /:", error);
+      res.status(500).send("Error en el servidor");
+    }
   });
 
   // Ruta de autenticación con Google
-  app.get(
-    "/auth/google",
-    passport.authenticate("google", {
-      session: false,
-      scope: ["profile", "email"],
-      accessType: "offline",
-      approvalPrompt: "force",
-    })
-  );
+  app.get("/auth/google", (req, res) => {
+    try {
+      passport.authenticate("google", {
+        session: false,
+        scope: ["profile", "email"],
+        accessType: "offline",
+        approvalPrompt: "force",
+      })(req, res);
+    } catch (error) {
+      console.error("Error en la ruta /auth/google:", error);
+      res.status(500).send("Error en el servidor");
+    }
+  });
 
   // Callback de autenticación con Google
-  app.get(
-    "/auth/google/callback",
-    passport.authenticate("google", {
-      successRedirect: "/auth/jwt",
-      failureRedirect: "/auth/failure",
-    })
-  );
+  app.get("/auth/google/callback", (req, res) => {
+    try {
+      passport.authenticate("google", {
+        successRedirect: "/auth/jwt",
+        failureRedirect: "/auth/failure",
+      })(req, res);
+    } catch (error) {
+      functions.logError(error);
+      console.error("Error en la ruta /auth/google/callback:", error);
+      res.status(500).send("Error en el servidor");
+    }
+  });
 
   // Ruta protegida con autenticación JWT
   app.get("/auth/jwt", aouthToken.isLogIn, (req, res) => {
@@ -36,9 +51,9 @@ module.exports = function (app) {
       const jwtToken = req.user;
       res.status(200).json(jwtToken);
     } catch (error) {
-      functions.logError(error); // Registra el error en caso de que ocurra
-      console.error(error); // Muestra el error en la consola
-      res.sendStatus(500); // Envía un código de estado 500 (Error del servidor)
+      functions.logError(error);
+      console.error(error);
+      res.sendStatus(500);
     }
   });
 
@@ -48,20 +63,31 @@ module.exports = function (app) {
       const tokenData = req.token;
       res.status(200).json(tokenData);
     } catch (error) {
-      functions.logError(error); // Registra el error en caso de que ocurra
-      res.sendStatus(404).json(error); // Envía un código de estado 500 (Error del servidor)
+      functions.logError(error);
+      res.sendStatus(404).json(error);
     }
   });
 
   // Ruta para cerrar sesión
   app.get("/auth/logout", (req, res) => {
-    req.session.destroy(); // Destruye la sesión del usuario
-    res.json("Hasta luego."); // Envía un mensaje de despedida
+    try {
+      req.session.destroy();
+      res.json("Hasta luego.");
+    } catch (error) {
+      functions.logError(error);
+      console.error("Error en la ruta /auth/logout:", error);
+      res.status(500).send("Error en el servidor");
+    }
   });
 
   // Ruta para manejar el fallo de autenticación
   app.get("/auth/failure", (req, res) => {
-    // Envía un código de estado 500 (Error del servidor)
-    res.sendStatus(500).json("Credenciales no válidas."); // Envía un mensaje de error
+    try {
+      res.status(500).json("Credenciales no válidas.");
+    } catch (error) {
+      functions.logError(error);
+      console.error("Error en la ruta /auth/failure:", error);
+      res.status(500).send("Error en el servidor");
+    }
   });
 };

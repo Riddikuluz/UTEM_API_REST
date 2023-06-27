@@ -1,8 +1,10 @@
 const axios = require("axios");
+const functions = require("../utils/functions");
 
 // Middleware que verifica si el usuario ha iniciado sesión
-function isLogIn(req, res, next) {
-  req.user ? next() : res.sendStatus(401); // Si el usuario no está autenticado, responde con un estado 401 (No autorizado)
+
+async function isLogIn(req, res, next) {
+  (await req.user) ? next() : res.sendStatus(401); // Si el usuario no está autenticado, responde con un estado 401 (No autorizado)
 }
 
 async function verifyToken(req, res, next) {
@@ -17,7 +19,7 @@ async function verifyToken(req, res, next) {
         req.token = response.data;
         next();
       } catch (error) {
-        logError(error); // Registrar el error en caso de que ocurra
+        functions.logError(error); // Registrar el error en caso de que ocurra
         console.error(error); // Mostrar el error en la consola
         res.sendStatus(500); // Error al realizar la petición a la API externa
       }
@@ -25,7 +27,7 @@ async function verifyToken(req, res, next) {
       res.sendStatus(403); // Si no se proporciona el encabezado de autorización, responde con un estado 403 (Prohibido)
     }
   } catch (error) {
-    logError(error); // Registrar el error en caso de que ocurra
+    functions.logError(error); // Registrar el error en caso de que ocurra
     //console.error(error); // Mostrar el error en la consola
   }
 }
@@ -46,14 +48,14 @@ async function verifyTokenbody(token) {
 
         //return response.data;
       } catch (error) {
-        logError(error); // Registrar el error en caso de que ocurra
+        functions.logError(error); // Registrar el error en caso de que ocurra
         return false; // Error al realizar la petición a la API externa 500
       }
     } else {
       return false; // Si no se proporciona el encabezado de autorización 403
     }
   } catch (error) {
-    logError(error); // Registrar el error en caso de que ocurra
+    functions.logError(error); // Registrar el error en caso de que ocurra
     return false; // Error interno del servidor 500
   }
 }

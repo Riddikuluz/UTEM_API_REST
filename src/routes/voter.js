@@ -69,7 +69,7 @@ module.exports = function (app) {
     const dataRamos = await getDB.buscaSeccion(seccion_curso);
 
     if (!dataToken || !dataRamos) {
-      res.status(500).json("Error al realizar la petición a la API externa"); // Enviar código de estado 500 y mensaje de error
+      res.status(400).json("Error al realizar la petición a la API externa"); // Enviar código de estado 400 (Solicitud incorrecta) y mensaje de error
     } else {
       try {
         const dataResultados = await getDB.consultarDB(); //votos y usuarios
