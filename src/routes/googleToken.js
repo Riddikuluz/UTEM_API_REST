@@ -1,6 +1,7 @@
 const passport = require("passport");
 const path = require("path");
-const functions = require("./functions");
+const functions = require("../utils/functions");
+const aouthToken = require("../services/oauthToken");
 
 module.exports = function (app) {
   // Ruta principal que devuelve el archivo index.html
@@ -30,7 +31,7 @@ module.exports = function (app) {
   );
 
   // Ruta protegida con autenticación JWT
-  app.get("/auth/jwt", functions.isLogIn, (req, res) => {
+  app.get("/auth/jwt", aouthToken.isLogIn, (req, res) => {
     try {
       const jwtToken = req.user;
       res.status(200).json(jwtToken);
@@ -42,7 +43,7 @@ module.exports = function (app) {
   });
 
   // Ruta para obtener el token JWT
-  app.get("/auth/jwt/data", functions.verifyToken, function (req, res) {
+  app.get("/auth/jwt/data", aouthToken.verifyToken, function (req, res) {
     try {
       const tokenData = req.token;
       res.status(200).json(tokenData);

@@ -1,15 +1,17 @@
-const functions = require("./functions");
-const postDB = require("./db");
+const functions = require("../utils/functions");
+const getDB = require("../models/consultasDB");
+const postDB = require("../models/votarDB");
+const aouthToken = require("../services/oauthToken");
 
 module.exports = function (app) {
   // Ruta para obtener los usuarios desde la base de datos
   app.get(
     "/v1/voter/results",
-    functions.verifyToken,
+    aouthToken.verifyToken,
     async function (req, res) {
       try {
-        const dataResultados = await postDB.consultadb();
-        res.status(200).json(dataResultados);
+        const dataResultados = await getDB.consultarDB(); //votos y usuarios
+        res.status(200).json(dataResultados.votos);
       } catch (error) {
         functions.logError(error); // Registra el error en caso de que ocurra
         res.sendStatus(500).json(error); // Envía un código de estado 500 (Error del servidor)
@@ -19,11 +21,11 @@ module.exports = function (app) {
 
   app.get(
     "/v1/voter/courses",
-    functions.verifyToken,
+    aouthToken.verifyToken,
     async function (req, res) {
       try {
-        const dataResultados = await postDB.dbcurso();
-        res.status(200).json(dataResultados);
+        const dataResultados = await getDB.consultarDB(); //ramos
+        res.status(200).json(dataResultados.ramos);
       } catch (error) {
         functions.logError(error); // Registra el error en caso de que ocurra
         res.sendStatus(500).json(error); // Envía un código de estado 500 (Error del servidor)
@@ -33,11 +35,11 @@ module.exports = function (app) {
 
   app.get(
     "/v1/voter/:seccion_curso/results",
-    functions.verifyToken,
+    aouthToken.verifyToken,
     async function (req, res) {
       const seccion_curso = req.params.seccion_curso;
       try {
-        const dataResultados = await postDB.consultaRamo(seccion_curso);
+        const dataResultados = await getDB.consultaSeccion(seccion_curso);
         if (dataResultados.valoraciones.length > 0) {
           const promedio = functions.calcularPromedio(
             dataResultados.valoraciones
@@ -63,14 +65,14 @@ module.exports = function (app) {
   app.post("/v1/voter/vote", async (req, res) => {
     // Datos del voto recibidos en el cuerpo de la solicitud
     const { authorization, fecha, valoracion, seccion_curso } = req.body;
-    const dataToken = await functions.verifyTokenbody(authorization);
-    const dataRamos = await postDB.buscaSeccion(seccion_curso);
+    const dataToken = await aouthToken.verifyTokenbody(authorization);
+    const dataRamos = await getDB.buscaSeccion(seccion_curso);
 
     if (!dataToken || !dataRamos) {
       res.status(500).json("Error al realizar la petición a la API externa"); // Enviar código de estado 500 y mensaje de error
     } else {
       try {
-        const dataResultados = await postDB.consultadb();
+        const dataResultados = await getDB.consultarDB(); //votos y usuarios
         if (
           functions.yaVoto(
             dataResultados.usuarios,

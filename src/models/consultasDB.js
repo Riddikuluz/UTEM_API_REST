@@ -1,8 +1,8 @@
 const { Client } = require("pg");
-const functions = require("./functions");
+const functions = require("../utils/functions");
 require("dotenv").config({ path: "./config/.env" });
 
-async function consultadb() {
+async function consultarDB() {
   const client = new Client({
     user: process.env.usuario_DB,
     host: process.env.public_IP,
@@ -20,15 +20,22 @@ async function consultadb() {
     `;
     const resultadoVotos = await client.query(consultaVotos);
 
-    const consultausuarios = `
+    const consultaUsuarios = `
       SELECT *
       FROM usuarios;
     `;
-    const resultadousuarios = await client.query(consultausuarios);
+    const resultadoUsuarios = await client.query(consultaUsuarios);
+
+    const consultaRamos = `
+      SELECT *
+      FROM ramos;
+    `;
+    const resultadoRamos = await client.query(consultaRamos);
 
     const resultado = {
       votos: resultadoVotos.rows,
-      usuarios: resultadousuarios.rows,
+      usuarios: resultadoUsuarios.rows,
+      ramos: resultadoRamos.rows,
     };
     return resultado;
   } catch (error) {
@@ -39,34 +46,7 @@ async function consultadb() {
   }
 }
 
-async function dbcurso() {
-  const client = new Client({
-    user: process.env.usuario_DB,
-    host: process.env.public_IP,
-    database: process.env.nombre_DB,
-    password: process.env.clave_DB,
-    port: process.env.pub_Port,
-  });
-
-  try {
-    await client.connect();
-
-    const consultaRamos = `
-      SELECT *
-      FROM ramos;
-    `;
-    const resultadoramos = await client.query(consultaRamos);
-
-    return resultadoramos.rows;
-  } catch (error) {
-    functions.logError(error);
-    throw error;
-  } finally {
-    await client.end();
-  }
-}
-
-async function consultaRamo(seccion_curso) {
+async function consultaSeccion(seccion_curso) {
   const client = new Client({
     user: process.env.usuario_DB,
     host: process.env.public_IP,
@@ -96,59 +76,6 @@ async function consultaRamo(seccion_curso) {
       valoraciones: resultadoVotos.rows,
       resultados: resultadoCurso.rows,
     };
-  } catch (error) {
-    functions.logError(error);
-    throw error;
-  } finally {
-    await client.end();
-  }
-}
-
-async function registrarVoto(
-  curso_id,
-  nombre_curso,
-  fecha,
-  valoracion,
-  usuario_id,
-  nombre,
-  seccion_curso,
-  semestre,
-  anio,
-  active
-) {
-  const client = new Client({
-    user: process.env.usuario_DB,
-    host: process.env.public_IP,
-    database: process.env.nombre_DB,
-    password: process.env.clave_DB,
-    port: process.env.pub_Port,
-  });
-
-  try {
-    await client.connect();
-
-    const insertUserQuery = `
-      INSERT INTO usuarios (usuario_id, nombre, fecha, curso_id)
-      VALUES ($1, $2, $3, $4)
-    `;
-
-    await client.query(insertUserQuery, [usuario_id, nombre, fecha, curso_id]);
-
-    const insertVoteQuery = `
-      INSERT INTO votos (curso_id, nombre_curso, fecha, valoracion, seccion_curso, semestre, anio, active)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    `;
-
-    await client.query(insertVoteQuery, [
-      curso_id,
-      nombre_curso,
-      fecha,
-      valoracion,
-      seccion_curso,
-      semestre,
-      anio,
-      active,
-    ]);
   } catch (error) {
     functions.logError(error);
     throw error;
@@ -198,9 +125,7 @@ async function buscaSeccion(seccionCurso) {
 }
 
 module.exports = {
-  registrarVoto,
-  consultadb,
-  consultaRamo,
-  dbcurso,
+  consultarDB,
+  consultaSeccion,
   buscaSeccion,
 };
