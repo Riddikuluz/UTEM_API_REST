@@ -2,14 +2,18 @@ const { Client } = require("pg");
 const functions = require("../utils/functions");
 require("dotenv").config({ path: "./config/.env" });
 
-async function consultarDB() {
-  const client = new Client({
+function getClient() {
+  return new Client({
     user: process.env.usuario_DB,
     host: process.env.public_IP,
     database: process.env.nombre_DB,
     password: process.env.clave_DB,
     port: process.env.pub_Port,
   });
+}
+
+async function consultarDB() {
+  const client = getClient();
 
   try {
     await client.connect();
@@ -39,6 +43,7 @@ async function consultarDB() {
     };
     return resultado;
   } catch (error) {
+    console.error("Error al consultar la base de datos:", error);
     functions.logError(error);
     throw error;
   } finally {
@@ -47,13 +52,7 @@ async function consultarDB() {
 }
 
 async function consultaSeccion(seccion_curso) {
-  const client = new Client({
-    user: process.env.usuario_DB,
-    host: process.env.public_IP,
-    database: process.env.nombre_DB,
-    password: process.env.clave_DB,
-    port: process.env.pub_Port,
-  });
+  const client = getClient();
 
   try {
     await client.connect();
@@ -77,6 +76,7 @@ async function consultaSeccion(seccion_curso) {
       resultados: resultadoCurso.rows,
     };
   } catch (error) {
+    console.error("Error al realizar la consulta por sección:", error);
     functions.logError(error);
     throw error;
   } finally {
@@ -85,13 +85,7 @@ async function consultaSeccion(seccion_curso) {
 }
 
 async function buscaSeccion(seccionCurso) {
-  const client = new Client({
-    user: process.env.usuario_DB,
-    host: process.env.public_IP,
-    database: process.env.nombre_DB,
-    password: process.env.clave_DB,
-    port: process.env.pub_Port,
-  });
+  const client = getClient();
 
   try {
     await client.connect();
@@ -104,7 +98,7 @@ async function buscaSeccion(seccionCurso) {
     const values = [seccionCurso];
     const result = await client.query(query, values);
 
-    if (result.rowCount > 0) {
+    if (result.rows.length > 0) {
       const curso_id = result.rows[0].curso_id;
       const nombre_curso = result.rows[0].nombre_curso;
       const semestre = result.rows[0].semestre;

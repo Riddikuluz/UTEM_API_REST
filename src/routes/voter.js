@@ -10,7 +10,7 @@ module.exports = function (app) {
     aouthToken.verifyToken,
     async function (req, res) {
       try {
-        const dataResultados = await getDB.consultarDB(); //votos y usuarios
+        const dataResultados = await getDB.consultarDB();
         res.status(200).json(dataResultados.votos);
       } catch (error) {
         functions.logError(error); // Registra el error en caso de que ocurra
@@ -65,11 +65,13 @@ module.exports = function (app) {
   app.post("/v1/voter/vote", async (req, res) => {
     // Datos del voto recibidos en el cuerpo de la solicitud
     const { authorization, fecha, valoracion, seccion_curso } = req.body;
+    // retorna datos del token: nombre y sub
     const dataToken = await aouthToken.verifyTokenbody(authorization);
+    // retorna datos del ramo-seccion: curso_id, nombre_curso, semestre, anio, active
     const dataRamos = await getDB.buscaSeccion(seccion_curso);
 
     if (!dataToken || !dataRamos) {
-      res.status(400).json("Error al realizar la petición a la API externa"); // Enviar código de estado 400 (Solicitud incorrecta) y mensaje de error
+      res.status(404).json("Datos no encotrados."); // Enviar código de estado 400 (Solicitud incorrecta) y mensaje de error
     } else {
       try {
         const dataResultados = await getDB.consultarDB(); //votos y usuarios

@@ -8,7 +8,6 @@ module.exports = function (app) {
   app.get("/", (req, res) => {
     try {
       res.sendFile(path.join(__dirname, "../public/index.html"));
-      //res.sendStatus(303); // 303 See Other
     } catch (error) {
       functions.logError(error);
       console.error("Error en la ruta /:", error);
@@ -26,6 +25,7 @@ module.exports = function (app) {
         approvalPrompt: "force",
       })(req, res);
     } catch (error) {
+      functions.logError(error);
       console.error("Error en la ruta /auth/google:", error);
       res.status(500).send("Error en el servidor");
     }
