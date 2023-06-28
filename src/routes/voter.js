@@ -78,11 +78,11 @@ module.exports = function (app) {
     }
   );
 
-  app.post("/v1/voter/vote", async (req, res) => {
+  app.post("/v1/voter/vote", aouthToken.verifyToken, async (req, res) => {
     // Datos del voto recibidos en el cuerpo de la solicitud
-    const { authorization, fecha, valoracion, seccion_curso } = req.body;
+    const { fecha, valoracion, seccion_curso } = req.body;
     // retorna datos del token: nombre y sub
-    const dataToken = await aouthToken.verifyTokenbody(authorization);
+    const dataToken = req.token;
     // retorna datos del ramo-seccion: curso_id, nombre_curso, semestre, anio, active
     const dataRamos = await getDB.buscaSeccion(seccion_curso);
 
@@ -94,20 +94,20 @@ module.exports = function (app) {
         if (
           functions.yaVoto(
             dataResultados.usuarios,
-            dataToken.usuario_id,
+            dataToken.sub,
             fecha,
             dataRamos.curso_id
           )
         ) {
-          res.status(200).json("Ya votó por este ramo, espere al próximo día.");
+          res.status(201).json("Ya votó por este ramo, espere al próximo día.");
         } else {
           await postDB.registrarVoto(
             dataRamos.curso_id,
             dataRamos.nombre_curso,
             fecha,
             valoracion,
-            dataToken.usuario_id,
-            dataToken.nombre,
+            dataToken.sub,
+            dataToken.name,
             seccion_curso,
             dataRamos.semestre,
             dataRamos.anio,

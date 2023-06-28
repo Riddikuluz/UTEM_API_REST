@@ -42,39 +42,7 @@ async function verifyToken(req, res, next) {
   }
 }
 
-async function verifyTokenbody(token) {
-  try {
-    if (typeof token === "undefined") {
-      return false; // Si no se proporciona el token, retorna false
-    }
-
-    try {
-      const response = await axios.get(
-        `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`
-      );
-
-      if (response.data.aud) {
-        return {
-          usuario_id: response.data.sub,
-          nombre: response.data.name,
-        };
-      } else {
-        return false; // El token no es válido
-      }
-    } catch (error) {
-      functions.logError(error);
-      console.error("Error al realizar la petición a la API externa:", error);
-      return false; // Error al realizar la petición a la API externa
-    }
-  } catch (error) {
-    functions.logError(error);
-    console.error("Error en verifyTokenbody:", error);
-    return false; // Error interno del servidor
-  }
-}
-
 module.exports = {
   verifyToken,
-  verifyTokenbody,
   isLogIn,
 };
