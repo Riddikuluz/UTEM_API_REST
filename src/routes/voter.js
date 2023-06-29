@@ -15,7 +15,7 @@ module.exports = function (app) {
           const dataResultados = await getDB.consultarDB();
           res.status(200).json(dataResultados.votos);
         } else {
-          res.status(403).json("El cliente no posee los permisos necesarios.");
+          res.status(403).json("Datos del cliente no encontrados.");
         }
       } catch (error) {
         functions.logError(error); // Registra el error en caso de que ocurra
@@ -34,7 +34,7 @@ module.exports = function (app) {
           const dataResultados = await getDB.consultarDB(); //ramos
           res.status(200).json(dataResultados.ramos);
         } else {
-          res.status(403).json("El cliente no posee los permisos necesarios.");
+          res.status(403).json("Datos del cliente no encontrados.");
         }
       } catch (error) {
         functions.logError(error); // Registra el error en caso de que ocurra
@@ -63,9 +63,7 @@ module.exports = function (app) {
             };
             res.json(resultados_seccion);
           } else {
-            res
-              .status(403)
-              .json("El cliente no posee los permisos necesarios.");
+            res.status(403).json("Datos del cliente no encontrados.");
           }
         } else {
           functions.logError("No hay registros");
@@ -87,7 +85,7 @@ module.exports = function (app) {
     const dataRamos = await getDB.buscaSeccion(seccion_curso);
 
     if (!dataToken || !dataRamos) {
-      res.status(404).json("Datos no encontrados."); // Enviar código de estado 404 (No encontrado) y mensaje de error
+      res.status(404).json("Datos del cliente no encontrados."); // Enviar código de estado 404 (No encontrado) y mensaje de error
     } else {
       try {
         const dataResultados = await getDB.consultarDB(); //votos y usuarios

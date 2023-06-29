@@ -7,7 +7,7 @@ const path = require("path");
 require("dotenv").config({ path: "./config/.env" });
 require("./services/oauth20");
 const app = express();
-const puerto = process.env.puertoServer || process.env.puerto;
+const puerto = process.env.puertoServer;
 
 // Configuraciones y middlewares de Express
 app.use(passport.initialize());

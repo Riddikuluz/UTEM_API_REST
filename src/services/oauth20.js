@@ -9,7 +9,7 @@ passport.use(
     {
       clientID: process.env.google_Client_Id, // ID de cliente de Google
       clientSecret: process.env.google_Client_Secret, // Clave secreta de cliente de Google
-      callbackURL: process.env.http_Domain_Server || process.env.http_Domain, // URL de retorno de llamada para la autenticación de Google
+      callbackURL: process.env.http_Domain_Server, // URL de retorno de llamada para la autenticación de Google
       passReqToCallback: true, // Pasar la solicitud al callback para mayor flexibilidad
     },
     async function (
