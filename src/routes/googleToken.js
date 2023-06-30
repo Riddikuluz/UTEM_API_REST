@@ -69,7 +69,7 @@ module.exports = function (app) {
   });
 
   // Ruta para cerrar sesión
-  app.get("/auth/logout", (req, res) => {
+  app.get("/auth/logout", aouthToken.isLogIn, (req, res) => {
     try {
       req.session.destroy();
       res.json("Hasta luego.");

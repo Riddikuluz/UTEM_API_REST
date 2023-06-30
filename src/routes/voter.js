@@ -6,7 +6,7 @@ const aouthToken = require("../services/oauthToken");
 module.exports = function (app) {
   // Ruta para obtener los usuarios desde la base de datos
   app.get(
-    "/v1/voter/results",
+    "/votacion/resultados",
     aouthToken.verifyToken,
     async function (req, res) {
       try {
@@ -24,27 +24,23 @@ module.exports = function (app) {
     }
   );
 
-  app.get(
-    "/v1/voter/courses",
-    aouthToken.verifyToken,
-    async function (req, res) {
-      try {
-        const tokenData = req.token;
-        if (getDB.buscarAdmin(tokenData.sub)) {
-          const dataResultados = await getDB.consultarDB(); //ramos
-          res.status(200).json(dataResultados.ramos);
-        } else {
-          res.status(403).json("Datos del cliente no encontrados.");
-        }
-      } catch (error) {
-        functions.logError(error); // Registra el error en caso de que ocurra
-        res.sendStatus(500); // Envía un código de estado 500 (Error del servidor)
+  app.get("/votacion/ramos", aouthToken.verifyToken, async function (req, res) {
+    try {
+      const tokenData = req.token;
+      if (getDB.buscarAdmin(tokenData.sub)) {
+        const dataResultados = await getDB.consultarDB(); //ramos
+        res.status(200).json(dataResultados.ramos);
+      } else {
+        res.status(403).json("Datos del cliente no encontrados.");
       }
+    } catch (error) {
+      functions.logError(error); // Registra el error en caso de que ocurra
+      res.sendStatus(500); // Envía un código de estado 500 (Error del servidor)
     }
-  );
+  });
 
   app.get(
-    "/v1/voter/:seccion_curso/results",
+    "/votacion/:seccion_curso/resultados",
     aouthToken.verifyToken,
     async function (req, res) {
       try {
@@ -76,7 +72,7 @@ module.exports = function (app) {
     }
   );
 
-  app.post("/v1/voter/vote", aouthToken.verifyToken, async (req, res) => {
+  app.post("/votacion/votar", aouthToken.verifyToken, async (req, res) => {
     // Datos del voto recibidos en el cuerpo de la solicitud
     const { fecha, valoracion, seccion_curso } = req.body;
     // retorna datos del token: nombre y sub

@@ -1,15 +1,16 @@
-const express = require("express");
-const routes = require("./routes/googleToken");
-const voter = require("./routes/voter");
-const passport = require("passport");
-const session = require("express-session");
-const path = require("path");
 require("dotenv").config({ path: "./config/.env" });
-require("./services/oauth20");
-const app = express();
+const session = require("express-session");
+const express = require("express");
+const passport = require("passport");
+const path = require("path");
+
+const routes = require("./routes/googleToken");
 const puerto = process.env.puertoServer;
+const voter = require("./routes/voter");
+require("./services/oauth20");
 
 // Configuraciones y middlewares de Express
+const app = express();
 app.use(passport.initialize());
 app.use(express.json()); // Permite el análisis de datos JSON en las solicitudes
 app.use(express.static(path.join(__dirname, "client"))); // Define el directorio estático para servir archivos estáticos
