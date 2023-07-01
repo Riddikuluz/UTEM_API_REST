@@ -1,0 +1,241 @@
+openapi: 3.0.1
+info:
+  title: UTEM API REST
+  version: 1.0.0
+  contact:
+    name: Francisco Robledo Venegas
+    url: https://github.com/Riddikuluz/UTEM_API_REST
+    email: francisco.robledov@utem.cl
+paths:
+  /:
+    get:
+      summary: Ruta principal
+      tags:
+        - Google-oauth
+      responses:
+        "200":
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: string
+  /auth/google:
+    get:
+      summary: Ruta de autenticación con Google
+      tags:
+        - Google-oauth
+      responses:
+        "200":
+          description: Respuesta exitosa
+        "500":
+          description: Error del servidor
+  /auth/google/callback:
+    get:
+      summary: Callback de autenticación con Google
+      tags:
+        - Google-oauth
+      responses:
+        "200":
+          description: Redirección exitosa
+        "500":
+          description: Error del servidor
+  /auth/jwt:
+    get:
+      summary: Ruta protegida con autenticación JWT
+      tags:
+        - Google-idToken
+      responses:
+        "200":
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: string
+        "500":
+          description: Error del servidor
+  /auth/jwt/data:
+    get:
+      summary: Obtener datos del token JWT
+      tags:
+        - Google-idToken
+      parameters:
+        - $ref: "#/components/parameters/authorization"
+      responses:
+        "200":
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  iss:
+                    type: string
+                  azp:
+                    type: string
+                  sub:
+                    type: string
+                  hd:
+                    type: string
+                  email:
+                    type: string
+                  email_verified:
+                    type: string
+                  at_hash:
+                    type: string
+                  name:
+                    type: string
+                  picture:
+                    type: string
+                  given_name:
+                    type: string
+                  family_name:
+                    type: string
+                  locale:
+                    type: string
+                  iat:
+                    type: string
+                  exp:
+                    type: string
+                  alg:
+                    type: string
+                  kid:
+                    type: string
+                  typ:
+                    type: string
+
+        "404":
+          description: No se encontraron datos del cliente
+  /auth/logout:
+    get:
+      summary: Ruta para cerrar sesión
+      tags:
+        - Google-oauth
+      responses:
+        "200":
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: string
+        "500":
+          description: Error del servidor
+  /auth/failure:
+    get:
+      summary: Ruta para manejar el fallo de autenticación
+      tags:
+        - Google-oauth
+      responses:
+        "500":
+          description: Credenciales no válidas
+  /votacion/resultados:
+    get:
+      summary: Obtener resultados de votación
+      tags:
+        - Votacion-consultas
+      parameters:
+        - $ref: "#/components/parameters/authorization"
+      responses:
+        "200":
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resultados:
+                    type: array
+                    items:
+                      type: string
+        "403":
+          description: Datos del cliente no encontrados
+  /votacion/ramos:
+    get:
+      summary: Obtener ramos de votación
+      tags:
+        - Votacion-consultas
+      parameters:
+        - $ref: "#/components/parameters/authorization"
+      responses:
+        "200":
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ramos:
+                    type: array
+                    items:
+                      type: string
+        "403":
+          description: Datos del cliente no encontrados
+  /votacion/{seccion_curso}/resultados:
+    get:
+      summary: Obtener resultados de votación para una sección de curso específica
+      tags:
+        - Votacion-consultas
+      parameters:
+        - $ref: "#/components/parameters/authorization"
+        - name: seccion_curso
+          in: path
+          description: Código de sección del curso
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  votaciones:
+                    type: array
+                    items:
+                      type: string
+                  promedio_seccion:
+                    type: number
+        "403":
+          description: Datos del cliente no encontrados
+        "404":
+          description: No hay registros
+  /votacion/votar:
+    post:
+      summary: Registrar voto
+      tags:
+        - Votacion-votar
+      parameters:
+        - $ref: "#/components/parameters/authorization"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fecha:
+                  type: string
+                  format: date
+                valoracion:
+                  type: number
+                seccion_curso:
+                  type: string
+      responses:
+        "200":
+          description: Votación realizada
+        "201":
+          description: Ya votó por este ramo, espere al próximo día
+        "404":
+          description: Datos del cliente no encontrados
+        "500":
+          description: Error del servidor
+components:
+  parameters:
+    authorization:
+      name: authorization
+      in: header
+      description: idToken
+      required: true
+      schema:
+        type: string
