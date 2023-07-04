@@ -15,7 +15,7 @@ module.exports = function (app) {
           const dataResultados = await getDB.consultarDB();
           res.status(200).json(dataResultados.votos);
         } else {
-          res.status(403).json("Datos del cliente no encontrados.");
+          res.status(401).json("Acceso no autorizado.");
         }
       } catch (error) {
         functions.logError(error); // Registra el error en caso de que ocurra
@@ -62,8 +62,8 @@ module.exports = function (app) {
             res.status(403).json("Datos del cliente no encontrados.");
           }
         } else {
-          functions.logError("No hay registros");
-          res.status(404).json("No hay registros");
+          functions.logError("204 No Content");
+          res.sendStatus(204);
         }
       } catch (error) {
         functions.logError(error); // Registra el error en caso de que ocurra

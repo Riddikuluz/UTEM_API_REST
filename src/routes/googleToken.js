@@ -16,33 +16,38 @@ module.exports = function (app) {
   });
 
   // Ruta de autenticación con Google
-  app.get("/auth/google", (req, res) => {
-    try {
-      passport.authenticate("google", {
-        session: false,
-        scope: ["profile", "email"],
-        accessType: "offline",
-        approvalPrompt: "force",
-      })(req, res);
-    } catch (error) {
-      functions.logError(error);
-      console.error("Error en la ruta /auth/google:", error);
-      res.status(500).send("Error en el servidor");
-    }
-  });
+  app.get(
+    "/auth/google",
+    passport.authenticate("google", {
+      session: false,
+      scope: ["profile", "email"],
+      accessType: "offline",
+      approvalPrompt: "force",
+    })
+  );
 
-  // Callback de autenticación con Google
-  app.get("/auth/google/callback", (req, res) => {
-    try {
-      passport.authenticate("google", {
-        successRedirect: "/auth/jwt",
-        failureRedirect: "/auth/failure",
-      })(req, res);
-    } catch (error) {
-      functions.logError(error);
-      console.error("Error en la ruta /auth/google/callback:", error);
-      res.status(500).send("Error en el servidor");
-    }
+  app.get("/auth/google/callback", (req, res, next) => {
+    passport.authenticate("google", (err, user, info) => {
+      if (err) {
+        functions.logError(err);
+        console.error("Error en la ruta /auth/google:", err);
+        return res.status(500).send("Error en el servidor");
+      }
+
+      if (!user) {
+        return res.status(401).json({ error: "Autenticación fallida" });
+      }
+
+      req.logIn(user, (err) => {
+        if (err) {
+          functions.logError(err);
+          console.error("Error en la ruta /auth/google:", err);
+          return res.status(500).send("Error en el servidor");
+        }
+
+        res.redirect("/auth/jwt");
+      });
+    })(req, res, next);
   });
 
   // Ruta protegida con autenticación JWT
@@ -64,7 +69,8 @@ module.exports = function (app) {
       res.status(200).json(tokenData);
     } catch (error) {
       functions.logError(error);
-      res.sendStatus(404).json(error);
+      console.error(error);
+      res.status(500).json({ error: "Error en el servidor" });
     }
   });
 
@@ -83,7 +89,7 @@ module.exports = function (app) {
   // Ruta para manejar el fallo de autenticación
   app.get("/auth/failure", (req, res) => {
     try {
-      res.status(500).json("Credenciales no válidas.");
+      res.status(401).json("Credenciales no válidas.");
     } catch (error) {
       functions.logError(error);
       console.error("Error en la ruta /auth/failure:", error);

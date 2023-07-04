@@ -37,6 +37,8 @@ paths:
       responses:
         "200":
           description: Redirección exitosa
+        "401":
+          description: Autenticación fallida
         "500":
           description: Error del servidor
   /auth/jwt:
@@ -79,7 +81,7 @@ paths:
                   email:
                     type: string
                   email_verified:
-                    type: string
+                    type: boolean
                   at_hash:
                     type: string
                   name:
@@ -93,9 +95,9 @@ paths:
                   locale:
                     type: string
                   iat:
-                    type: string
+                    type: number
                   exp:
-                    type: string
+                    type: number
                   alg:
                     type: string
                   kid:
@@ -103,7 +105,7 @@ paths:
                   typ:
                     type: string
 
-        "404":
+        "500":
           description: No se encontraron datos del cliente
   /auth/logout:
     get:
@@ -125,8 +127,10 @@ paths:
       tags:
         - Google-oauth
       responses:
-        "500":
+        "401":
           description: Credenciales no válidas
+        "500":
+          description: Error en el servidor
   /votacion/resultados:
     get:
       summary: Obtener resultados de votación
@@ -146,8 +150,10 @@ paths:
                     type: array
                     items:
                       type: string
-        "403":
-          description: Datos del cliente no encontrados
+        "401":
+          description: Acceso no autorizado
+        "500":
+          description: Error en el servidor
   /votacion/ramos:
     get:
       summary: Obtener ramos de votación
@@ -169,6 +175,8 @@ paths:
                       type: string
         "403":
           description: Datos del cliente no encontrados
+        "500":
+          description: Error en el servidor
   /votacion/{seccion_curso}/resultados:
     get:
       summary: Obtener resultados de votación para una sección de curso específica
@@ -198,8 +206,10 @@ paths:
                     type: number
         "403":
           description: Datos del cliente no encontrados
-        "404":
-          description: No hay registros
+        "204":
+          description: No hay Contenido
+        "500":
+          description: Error en el servidor
   /votacion/votar:
     post:
       summary: Registrar voto

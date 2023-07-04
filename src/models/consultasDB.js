@@ -107,7 +107,7 @@ async function buscaSeccion(seccionCurso) {
 
       return { curso_id, nombre_curso, semestre, anio, active };
     } else {
-      return null;
+      return {};
     }
   } catch (error) {
     console.error("Error al buscar el curso por sección:", error);
