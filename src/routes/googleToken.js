@@ -5,7 +5,7 @@ const aouthToken = require("../services/oauthToken");
 
 module.exports = function (app) {
   // Ruta principal que devuelve el archivo index.html
-  app.get("/", (req, res) => {
+  app.get("/grupoe", (req, res) => {
     try {
       res.sendFile(path.join(__dirname, "../public/index.html"));
     } catch (error) {
@@ -17,7 +17,7 @@ module.exports = function (app) {
 
   // Ruta de autenticación con Google
   app.get(
-    "/auth/google",
+    "/grupoe/auth/google",
     passport.authenticate("google", {
       session: false,
       scope: ["profile", "email"],
@@ -26,11 +26,11 @@ module.exports = function (app) {
     })
   );
 
-  app.get("/auth/google/callback", (req, res, next) => {
+  app.get("/grupoe/auth/google/callback", (req, res, next) => {
     passport.authenticate("google", (err, user, info) => {
       if (err) {
         functions.logError(err);
-        console.error("Error en la ruta /auth/google:", err);
+        console.error("Error en la ruta /grupoe/auth/google:", err);
         return res.status(500).send("Error en el servidor");
       }
 
@@ -45,13 +45,13 @@ module.exports = function (app) {
           return res.status(500).send("Error en el servidor");
         }
 
-        res.redirect("/auth/jwt");
+        res.redirect("/grupoe/auth/jwt");
       });
     })(req, res, next);
   });
 
   // Ruta protegida con autenticación JWT
-  app.get("/auth/jwt", aouthToken.isLogIn, (req, res) => {
+  app.get("/grupoe/auth/jwt", aouthToken.isLogIn, (req, res) => {
     try {
       const jwtToken = req.user;
       res.status(200).json(jwtToken);
@@ -63,7 +63,7 @@ module.exports = function (app) {
   });
 
   // Ruta para obtener el token JWT
-  app.get("/auth/jwt/data", aouthToken.verifyToken, function (req, res) {
+  app.get("/grupoe/auth/jwt/data", aouthToken.verifyToken, function (req, res) {
     try {
       const tokenData = req.token;
       res.status(200).json(tokenData);
@@ -75,7 +75,7 @@ module.exports = function (app) {
   });
 
   // Ruta para cerrar sesión
-  app.get("/auth/logout", aouthToken.isLogIn, (req, res) => {
+  app.get("/grupoe/auth/logout", aouthToken.isLogIn, (req, res) => {
     try {
       req.session.destroy();
       res.json("Hasta luego.");
@@ -87,7 +87,7 @@ module.exports = function (app) {
   });
 
   // Ruta para manejar el fallo de autenticación
-  app.get("/auth/failure", (req, res) => {
+  app.get("/grupoe/auth/failure", (req, res) => {
     try {
       res.status(401).json("Credenciales no válidas.");
     } catch (error) {

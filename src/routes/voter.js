@@ -6,7 +6,7 @@ const aouthToken = require("../services/oauthToken");
 module.exports = function (app) {
   // Ruta para obtener los usuarios desde la base de datos
   app.get(
-    "/votacion/resultados",
+    "/grupoe/votacion/resultados",
     aouthToken.verifyToken,
     async function (req, res) {
       try {
@@ -24,7 +24,7 @@ module.exports = function (app) {
     }
   );
 
-  app.get("/votacion/ramos", aouthToken.verifyToken, async function (req, res) {
+  app.get("/grupoe/votacion/ramos", aouthToken.verifyToken, async function (req, res) {
     try {
       const tokenData = req.token;
       if (getDB.buscarAdmin(tokenData.sub)) {
@@ -40,7 +40,7 @@ module.exports = function (app) {
   });
 
   app.get(
-    "/votacion/:seccion_curso/resultados",
+    "/grupoe/votacion/:seccion_curso/resultados",
     aouthToken.verifyToken,
     async function (req, res) {
       try {
@@ -72,7 +72,7 @@ module.exports = function (app) {
     }
   );
 
-  app.post("/votacion/votar", aouthToken.verifyToken, async (req, res) => {
+  app.post("/grupoe/votacion/votar", aouthToken.verifyToken, async (req, res) => {
     // Datos del voto recibidos en el cuerpo de la solicitud
     const { fecha, valoracion, seccion_curso } = req.body;
     // retorna datos del token: nombre y sub

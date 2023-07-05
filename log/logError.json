@@ -1,0 +1,7 @@
+[
+  {
+    "message": "Request failed with status code 400",
+    "stack": "AxiosError: Request failed with status code 400\n    at settle (C:\\Users\\panch\\OneDrive\\Documentos\\GitHub\\UTEM_API_REST\\node_modules\\axios\\dist\\node\\axios.cjs:1909:12)\n    at Unzip.handleStreamEnd (C:\\Users\\panch\\OneDrive\\Documentos\\GitHub\\UTEM_API_REST\\node_modules\\axios\\dist\\node\\axios.cjs:2989:11)\n    at Unzip.emit (node:events:523:35)\n    at endReadableNT (node:internal/streams/readable:1367:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)",
+    "date": "2023-07-05T00:15:20.470Z"
+  }
+]

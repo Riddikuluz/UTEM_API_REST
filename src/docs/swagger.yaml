@@ -44,6 +44,8 @@ paths:
   /auth/jwt:
     get:
       summary: Ruta protegida con autenticación JWT
+      security:
+        - BearerAuth: []
       tags:
         - Google-idToken
       responses:
@@ -58,10 +60,10 @@ paths:
   /auth/jwt/data:
     get:
       summary: Obtener datos del token JWT
+      security:
+        - BearerAuth: []
       tags:
         - Google-idToken
-      parameters:
-        - $ref: "#/components/parameters/authorization"
       responses:
         "200":
           description: Respuesta exitosa
@@ -104,7 +106,6 @@ paths:
                     type: string
                   typ:
                     type: string
-
         "500":
           description: No se encontraron datos del cliente
   /auth/logout:
@@ -136,8 +137,8 @@ paths:
       summary: Obtener resultados de votación
       tags:
         - Votacion-consultas
-      parameters:
-        - $ref: "#/components/parameters/authorization"
+      security:
+        - BearerAuth: []
       responses:
         "200":
           description: Respuesta exitosa
@@ -157,10 +158,8 @@ paths:
   /votacion/ramos:
     get:
       summary: Obtener ramos de votación
-      tags:
-        - Votacion-consultas
-      parameters:
-        - $ref: "#/components/parameters/authorization"
+      security:
+        - BearerAuth: []
       responses:
         "200":
           description: Respuesta exitosa
@@ -182,11 +181,12 @@ paths:
       summary: Obtener resultados de votación para una sección de curso específica
       tags:
         - Votacion-consultas
+      security:
+        - BearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/authorization"
         - name: seccion_curso
           in: path
-          description: Código de sección del curso
+          description: Sección del curso
           required: true
           schema:
             type: string
@@ -207,7 +207,7 @@ paths:
         "403":
           description: Datos del cliente no encontrados
         "204":
-          description: No hay Contenido
+          description: No hay contenido
         "500":
           description: Error en el servidor
   /votacion/votar:
@@ -215,8 +215,8 @@ paths:
       summary: Registrar voto
       tags:
         - Votacion-votar
-      parameters:
-        - $ref: "#/components/parameters/authorization"
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -235,6 +235,7 @@ paths:
         "200":
           description: Votación realizada
         "201":
+        "201":
           description: Ya votó por este ramo, espere al próximo día
         "404":
           description: Datos del cliente no encontrados
@@ -243,9 +244,14 @@ paths:
 components:
   parameters:
     authorization:
-      name: authorization
+      name: Authorization
       in: header
-      description: idToken
+      description: Token de autorización JWT
       required: true
       schema:
         type: string
+  securitySchemes:
+    BearerAuth:
+      type: apiKey
+      name: Authorization
+      in: header

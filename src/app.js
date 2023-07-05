@@ -37,7 +37,7 @@ googleRoute(app);
 voterRoute(app);
 
 // swagger
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/grupoe/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Iniciar el servidor
 app.listen(puerto, () => {
