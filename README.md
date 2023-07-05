@@ -2,6 +2,16 @@
 
 Este repositorio contiene una implementación básica de autenticación utilizando Passport.js y JWT (JSON Web Tokens) en una aplicación Node.js. La autenticación se realiza mediante la estrategia de autenticación de Google OAuth2. Los usuarios pueden iniciar sesión con sus cuentas de Google y se les proporciona un token JWT para autorizar las solicitudes posteriores a la API.
 
+## Autores
+
+Este repositorio fue desarrollado por el grupo E, compuesto por:
+
+'''bash
+Romina Araya Araya
+Francisco Robledo Venegas
+Brian Ponce Cruz
+'''
+
 ## Características
 
 - Utiliza el módulo `passport-google-oauth20` para la autenticación con Google OAuth2.
