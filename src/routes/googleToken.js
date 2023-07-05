@@ -7,7 +7,7 @@ module.exports = function (app) {
   // Ruta principal que devuelve el archivo index.html
   app.get("/grupoe", (req, res) => {
     try {
-      res.sendFile(path.join(__dirname, "../public/index.html"));
+      res.sendFile(path.join(__dirname, "../../public/index.html"));
     } catch (error) {
       functions.logError(error);
       console.error("Error en la ruta /:", error);

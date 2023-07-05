@@ -27,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/Riddikuluz/UTEM_API_REST/issues"
   },
-  "homepage": "https://github.com/Riddikuluz/UTEM_API_REST#readme"
+  "homepage": "https://github.com/Riddikuluz/UTEM_API_REST#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
 }
