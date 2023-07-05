@@ -6,11 +6,11 @@ Este repositorio contiene una implementación básica de autenticación utilizan
 
 Este repositorio fue desarrollado por el grupo E, compuesto por:
 
-'''bash
+```bash
 Romina Araya Araya
 Francisco Robledo Venegas
 Brian Ponce Cruz
-'''
+```
 
 ## Características
 
